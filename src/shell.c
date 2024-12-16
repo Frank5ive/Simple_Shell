@@ -1,9 +1,10 @@
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include<unistd.h>
-#include<sys/types.h>
-#include<sys/wait.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include "shell.h"
 
 #define MAX_INPUT_SIZE 1024
@@ -45,7 +46,13 @@ char **parse_input(char *input) {
     int index = 0;
     char *token = strtok(input, " ");
     while (token != NULL && index < MAX_ARGS - 1) {
-        args[index++] = token;
+        // Manually duplicate the token
+        args[index] = malloc(strlen(token) + 1);
+        if (!args[index]) {
+            perror("Malloc failed");
+            exit(EXIT_FAILURE);
+        }
+        strcpy(args[index++], token); // Copy the token into args
         token = strtok(NULL, " ");
     }
     args[index] = NULL; // Terminate argument list
@@ -59,42 +66,27 @@ void execute_command(char **args) {
         return;
     }
 
-    // Handle built-in commands
-    if (strcmp(args[0], "cd") == 0) {
-        if (args[1] == NULL) {
-            printf("cd: missing argument\n");
-        } else if (chdir(args[1]) != 0) {
-            perror("cd");
-        }
-        return;
-    }
-
-    if (strcmp(args[0], "pwd") == 0) {
-        char cwd[1024];
-        if (getcwd(cwd, sizeof(cwd)) == NULL) {
-            perror("pwd");
-        } else {
-            printf("%s\n", cwd);
-        }
-        return;
-    }
-
     if (strcmp(args[0], "exit") == 0) {
         printf("Exiting Simple Shell...\n");
         exit(EXIT_SUCCESS);
     }
 
-    // If not a built-in command, execute with execvp()
     pid_t pid = fork();
     if (pid == -1) {
         perror("Failed to fork");
         return;
-    } else if (pid == 0) {  // Child process
+    } 
+    else if (pid == 0) {  // Child process
+        if (handle_redirection(args) == -1) {
+            exit(EXIT_FAILURE);  // Handle redirection failure
+        }
+
         if (execvp(args[0], args) == -1) {
             perror("Command execution failed");
         }
         exit(EXIT_FAILURE);  // Ensure child exits after failure
-    } else {  // Parent process
+    } 
+    else {  // Parent process
         int status;
         waitpid(pid, &status, WUNTRACED);
     }

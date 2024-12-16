@@ -1,12 +1,12 @@
 # **Simple Shell Project**  
 
-Welcome to the **Simple Shell** project! This is a basic Unix-like shell built using **C**. The shell supports essential features such as command execution, built-in commands (`cd`, `pwd`, `exit`), and process management. This README file explains the project structure, modules implemented, and guides future contributors for improvements.  
+Welcome to the **Simple Shell** project! This is a basic Unix-like shell built using **C**. The shell supports essential features such as command execution, built-in commands (`cd`, `pwd`, `exit`), process management, and input/output redirection. This README file explains the project structure, modules implemented, and guides future contributors for improvements.  
 
 ---
 
 ## **Project Overview**  
 
-The Simple Shell mimics the functionality of a basic command-line interface. It processes user input, executes commands, and manages processes efficiently. It demonstrates core concepts of system-level programming, including process control, file handling, and custom command parsing.
+The Simple Shell mimics the functionality of a basic command-line interface. It processes user input, executes commands, manages processes efficiently, and supports input and output redirection. It demonstrates core concepts of system-level programming, including process control, file handling, custom command parsing, and redirection operations.
 
 ---
 
@@ -64,6 +64,18 @@ Simple_Shell/
 
 ---
 
+### 4. **I/O Redirection**  
+- **Description:** Handles input (`<`) and output (`>`) redirection to and from files.  
+- **Key Features:**  
+  - **Output Redirection (`>`)**: Redirects command output to a specified file.
+    - Example: `echo "Hello, World!" > output.txt`
+  - **Input Redirection (`<`)**: Reads input for commands from a specified file.
+    - Example: `cat < input.txt`
+  - **Combined Input and Output Redirection**: Allows for both input and output redirection in one command.
+    - Example: `cat < input.txt > output.txt`
+
+---
+
 ## **How to Build and Run**  
 
 1. Clone the repository:  
@@ -97,8 +109,7 @@ To contribute, follow these steps:
 
 ### **Suggested Features:**  
 - Add more built-in commands like `echo`, `history`, or `clear`.  
-- Implement I/O redirection (`>`, `<`, `>>`).  
-- Add piping support (`|`).  
+- Implement piping support (`|`).  
 - Add environment variable management.  
 - Implement auto-completion and command history.
 
@@ -119,5 +130,3 @@ To contribute, follow these steps:
 ## **License**  
 
 This project is open-source and free to use under the MIT License.
-
----
