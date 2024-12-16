@@ -54,29 +54,48 @@ char **parse_input(char *input) {
 
 // Function to execute a command
 void execute_command(char **args) {
-    pid_t pid;
-    int status;
-
     if (args[0] == NULL) {
         printf("No command entered.\n");
         return;
     }
 
-    pid = fork();  // Create a child process
+    // Handle built-in commands
+    if (strcmp(args[0], "cd") == 0) {
+        if (args[1] == NULL) {
+            printf("cd: missing argument\n");
+        } else if (chdir(args[1]) != 0) {
+            perror("cd");
+        }
+        return;
+    }
 
+    if (strcmp(args[0], "pwd") == 0) {
+        char cwd[1024];
+        if (getcwd(cwd, sizeof(cwd)) == NULL) {
+            perror("pwd");
+        } else {
+            printf("%s\n", cwd);
+        }
+        return;
+    }
+
+    if (strcmp(args[0], "exit") == 0) {
+        printf("Exiting Simple Shell...\n");
+        exit(EXIT_SUCCESS);
+    }
+
+    // If not a built-in command, execute with execvp()
+    pid_t pid = fork();
     if (pid == -1) {
         perror("Failed to fork");
         return;
-    } 
-    else if (pid == 0) {  // Child process
+    } else if (pid == 0) {  // Child process
         if (execvp(args[0], args) == -1) {
             perror("Command execution failed");
         }
         exit(EXIT_FAILURE);  // Ensure child exits after failure
-    } 
-    else {  // Parent process
-        do {
-            waitpid(pid, &status, WUNTRACED);  // Wait for child process
-        } while (!WIFEXITED(status) && !WIFSIGNALED(status));
+    } else {  // Parent process
+        int status;
+        waitpid(pid, &status, WUNTRACED);
     }
 }
