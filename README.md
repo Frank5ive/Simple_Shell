@@ -1,12 +1,12 @@
 # **Simple Shell Project**  
 
-Welcome to the **Simple Shell** project! This is a basic Unix-like shell built using **C**. The shell supports essential features such as command execution, built-in commands (`cd`, `pwd`, `exit`), process management, and input/output redirection. This README file explains the project structure, modules implemented, and guides future contributors for improvements.  
+Welcome to the **Simple Shell** project! This is a Unix-like command-line shell built using **C**. It supports features like command execution, built-in commands (`cd`, `pwd`, `exit`), process management, I/O redirection, piping, and future GUI extensions. This README explains the project structure, implemented modules, and contribution guidelines.
 
 ---
 
 ## **Project Overview**  
 
-The Simple Shell mimics the functionality of a basic command-line interface. It processes user input, executes commands, manages processes efficiently, and supports input and output redirection. It demonstrates core concepts of system-level programming, including process control, file handling, custom command parsing, and redirection operations.
+The Simple Shell provides a basic CLI environment for executing system commands. It demonstrates core system-level programming concepts like process management, file handling, command parsing, I/O redirection, and inter-process communication.
 
 ---
 
@@ -15,12 +15,14 @@ The Simple Shell mimics the functionality of a basic command-line interface. It 
 ```
 Simple_Shell/
 ├── include/
-│   └── shell.h            # Function declarations
+│   └── shell.h               # Function declarations and constants
 ├── src/
-│   ├── main.c             # Main entry point for the shell
-│   ├── shell.c            # Core implementation of the shell
-├── Makefile               # Build automation file
-└── README.md              # Project documentation
+│   ├── main.c                # Main entry point for the shell
+│   ├── shell.c               # Core implementation of the shell
+│   ├── redirection.c         # I/O redirection handling
+│   ├── piping.c              # Piping feature implementation 
+├── Makefile                  # Build automation file
+└── README.md                 # Project documentation
 ```
 
 ---
@@ -28,20 +30,20 @@ Simple_Shell/
 ## **Modules Implemented**  
 
 ### 1. **Core Shell Framework**  
-- **Description:** The shell’s main execution loop and user input processing.  
+- **Description:** Manages the shell's main execution loop and user input processing.  
 - **Key Functions:**  
   - `read_input()` - Reads user input from the command line.  
-  - `parse_input()` - Tokenizes the input into command and arguments.  
+  - `parse_input()` - Tokenizes the input into commands and arguments.  
   - Main loop runs continuously until terminated.
 
 ---
 
 ### 2. **Command Execution**  
-- **Description:** Executes external system commands using process management functions.  
+- **Description:** Executes system commands using process management functions.  
 - **Key Functions:**  
-  - **Forking:** Creates a child process using `fork()`.  
-  - **Execution:** Replaces the child process with the new command using `execvp()`.  
-  - **Error Handling:** Manages errors during execution using `perror()`.  
+  - **Forking:** Creates child processes using `fork()`.  
+  - **Execution:** Replaces the child process using `execvp()`.  
+  - **Error Handling:** Displays errors using `perror()`.  
   - **Process Management:** Waits for child processes using `waitpid()`.
 
 ---
@@ -55,24 +57,63 @@ Simple_Shell/
    - Example: `cd /home/user`  
 
 2. **`pwd`**  
-   - Prints the current working directory using `getcwd()`.  
+   - Displays the current working directory using `getcwd()`.  
    - Example: `pwd`  
 
 3. **`exit`**  
-   - Exits the shell gracefully using `exit(EXIT_SUCCESS)`.  
+   - Exits the shell using `exit(EXIT_SUCCESS)`.  
    - Example: `exit`  
 
 ---
 
 ### 4. **I/O Redirection**  
-- **Description:** Handles input (`<`) and output (`>`) redirection to and from files.  
-- **Key Features:**  
-  - **Output Redirection (`>`)**: Redirects command output to a specified file.
-    - Example: `echo "Hello, World!" > output.txt`
-  - **Input Redirection (`<`)**: Reads input for commands from a specified file.
+- **Description:** Redirects input (`<`) and output (`>`) to/from files.  
+- **Features:**  
+  - **Output Redirection (`>`)**: Sends command output to a file.
+    - Example: `echo "Hello" > output.txt`
+  - **Input Redirection (`<`)**: Reads input for commands from a file.
     - Example: `cat < input.txt`
-  - **Combined Input and Output Redirection**: Allows for both input and output redirection in one command.
+  - **Combined Redirection**: Supports simultaneous input and output redirection.
     - Example: `cat < input.txt > output.txt`
+
+---
+
+### 5. **Piping Support**  
+- **Description:** Links the output of one command to the input of another using pipes (`|`).  
+- **Key Functions:**  
+  - Parses piped commands (`|`) into segments.  
+  - Creates pipes using `pipe()`.  
+  - Connects input/output streams using `dup2()`.
+
+#### Example:  
+```bash
+ls -l | grep ".c" | wc -l
+```
+
+---
+
+### 6. **Error Management**  
+- **Description:** Centralized error handling for consistent user feedback.  
+- **Key Functions:**  
+  - Prints descriptive errors for command failures.  
+  - Displays usage instructions for unsupported features.
+
+---
+
+### 7. **Utility Functions**  
+- **Description:** Helper functions for tokenization, string processing, and memory management.  
+- **Key Functions:**  
+  - `tokenize_input()` - Splits input into tokens based on spaces or symbols.  
+  - `trim_whitespace()` - Removes leading/trailing whitespace.
+
+---
+
+### 8. **Future Module: Graphical User Interface (GUI)**  
+- **Description:** Planned implementation of a separate GUI using **C** libraries or a cross-platform GUI toolkit.  
+- **Features Planned:**  
+  - Custom command prompt themes with colorful output.  
+  - Clickable command history.  
+  - Real-time process monitoring with visual cues.
 
 ---
 
@@ -98,8 +139,6 @@ Simple_Shell/
 
 ## **How to Contribute**  
 
-To contribute, follow these steps:  
-
 1. **Fork** the repository.  
 2. **Create a branch** for your feature or bug fix:  
    ```bash
@@ -108,10 +147,10 @@ To contribute, follow these steps:
 3. **Make improvements** based on these suggestions:  
 
 ### **Suggested Features:**  
-- Add more built-in commands like `echo`, `history`, or `clear`.  
-- Implement piping support (`|`).  
-- Add environment variable management.  
-- Implement auto-completion and command history.
+- Add new built-in commands like `echo`, `history`, or `clear`.  
+- Implement environment variable management.  
+- Add command history and auto-completion.  
+- Enhance the GUI module with custom themes and animations.
 
 4. **Commit your changes:**  
    ```bash

@@ -9,5 +9,5 @@ char *read_input();
 char **parse_input(char *input);
 void execute_command(char **args);
 int handle_redirection(char **args);
-
+int handle_piping(char *input);
 #endif

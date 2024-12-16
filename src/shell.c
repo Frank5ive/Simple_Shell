@@ -71,6 +71,11 @@ void execute_command(char **args) {
         exit(EXIT_SUCCESS);
     }
 
+    // Check if the input contains pipes
+    if (handle_piping(args[0])) {
+        return;  // Piping handled
+    }
+
     pid_t pid = fork();
     if (pid == -1) {
         perror("Failed to fork");
