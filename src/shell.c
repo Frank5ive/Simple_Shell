@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include<unistd.h>
+#include<sys/types.h>
+#include<sys/wait.h>
 #include "shell.h"
 
 #define MAX_INPUT_SIZE 1024
@@ -14,6 +17,7 @@ char *read_input() {
         exit(EXIT_FAILURE);
     }
 
+    // Prompt and read input
     if (fgets(input, MAX_INPUT_SIZE, stdin) == NULL) {
         free(input);
         return NULL;
@@ -21,6 +25,12 @@ char *read_input() {
 
     // Remove the newline character
     input[strcspn(input, "\n")] = '\0';
+
+    // Return input only if not empty
+    if (strlen(input) == 0) {
+        free(input);
+        return NULL;
+    }
     return input;
 }
 
@@ -44,5 +54,29 @@ char **parse_input(char *input) {
 
 // Function to execute a command
 void execute_command(char **args) {
-    printf("Executing command: %s\n", args[0]);
+    pid_t pid;
+    int status;
+
+    if (args[0] == NULL) {
+        printf("No command entered.\n");
+        return;
+    }
+
+    pid = fork();  // Create a child process
+
+    if (pid == -1) {
+        perror("Failed to fork");
+        return;
+    } 
+    else if (pid == 0) {  // Child process
+        if (execvp(args[0], args) == -1) {
+            perror("Command execution failed");
+        }
+        exit(EXIT_FAILURE);  // Ensure child exits after failure
+    } 
+    else {  // Parent process
+        do {
+            waitpid(pid, &status, WUNTRACED);  // Wait for child process
+        } while (!WIFEXITED(status) && !WIFSIGNALED(status));
+    }
 }
