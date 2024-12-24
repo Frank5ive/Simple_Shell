@@ -7,9 +7,6 @@
 #include <sys/wait.h>
 #include "shell.h"
 
-#define MAX_INPUT_SIZE 1024
-#define MAX_ARGS 64
-
 // Function to read input from the user
 char *read_input() {
     char *input = malloc(MAX_INPUT_SIZE);
@@ -37,26 +34,15 @@ char *read_input() {
 
 // Function to parse the input into arguments
 char **parse_input(char *input) {
-    char **args = malloc(MAX_ARGS * sizeof(char *));
-    if (!args) {
-        perror("Malloc failed");
-        exit(EXIT_FAILURE);
+    if (!input) {
+        return NULL;
     }
 
-    int index = 0;
-    char *token = strtok(input, " ");
-    while (token != NULL && index < MAX_ARGS - 1) {
-        // Manually duplicate the token
-        args[index] = malloc(strlen(token) + 1);
-        if (!args[index]) {
-            perror("Malloc failed");
-            exit(EXIT_FAILURE);
-        }
-        strcpy(args[index++], token); // Copy the token into args
-        token = strtok(NULL, " ");
-    }
-    args[index] = NULL; // Terminate argument list
-    return args;
+    // Trim whitespace from the input
+    input = trim_whitespace(input);
+
+    // Tokenize the input using spaces as the delimiter
+    return tokenize_input(input, " ");
 }
 
 // Function to execute a command

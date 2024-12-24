@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -Werror -std=c99 -I include
-SRC = src/main.c src/shell.c src/redirection.c src/piping.c
+SRC = src/main.c src/shell.c src/redirection.c src/piping.c src/utils.c
 OBJ = $(SRC:.c=.o)
 TARGET = simple_shell
 
